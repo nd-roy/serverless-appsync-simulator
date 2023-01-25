@@ -295,12 +295,13 @@ class ServerlessAppSyncSimulator {
    */
   resolveResources(toBeResolved) {
     // Pass all resources to allow Fn::GetAtt and Conditions resolution
-    const node = {
-      ...this.serverless.service.resources,
+    const node = { ...this.serverless.service.resources,
       toBeResolved,
+      Parameters: {}, // Passing {} would avoid the issue on latest cnf-resolver-lib version
     };
-    const evaluator = new NodeEvaluator(node, this.resourceResolvers);
+    const evaluator = new _cfnResolverLib.default(node, this.resourceResolvers);
     const result = evaluator.evaluateNodes();
+
     if (result && result.toBeResolved) {
       return result.toBeResolved;
     }
